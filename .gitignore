@@ -1,6 +1,6 @@
 
 #  dont check-in any data
-data/
+/data
 
 
 # or binaries

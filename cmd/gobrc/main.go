@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"gobrc/pkg/data"
 	"gobrc/pkg/naive"
 	"os"
 	"path/filepath"
@@ -46,38 +47,8 @@ func main() {
 		fmt.Println("parsing file: ", path)
 	}
 
-	inputFile, err := os.Open(path)
-	if err != nil {
-		panic(err)
-	}
-	defer inputFile.Close()
-
-	inputScanner := bufio.NewScanner(inputFile)
-	inputScanner.Split(bufio.ScanLines)
-
-	results := map[string]naive.StationData{}
-	lineCount := uint64(0)
-
-	for inputScanner.Scan() {
-		line := inputScanner.Text()
-
-		name, temp := naive.ParseLine(line)
-
-		currData, found := results[name]
-		if !found {
-			currData.Min = temp
-			currData.Max = temp
-		} else {
-			currData.Min = min(currData.Min, temp)
-			currData.Max = max(currData.Max, temp)
-		}
-
-		currData.Count += 1
-		currData.Sum += int64(temp)
-		results[name] = currData
-
-		lineCount += 1
-	}
+	results := map[string]data.StationData{}
+	lineCount := naive.ParseFileInto(path, results)
 
 	keys := make([]string, 0, len(results))
 	for k := range results {

@@ -1,24 +1,15 @@
 package naive
 
 import (
-	"fmt"
+	"bufio"
+	"gobrc/pkg/data"
+	"os"
 	"strings"
 )
 
 const (
 	zero_char_value = int16('0')
 )
-
-type StationData struct {
-	Min   int16
-	Max   int16
-	Count int32
-	Sum   int64
-}
-
-func (d StationData) String() string {
-	return fmt.Sprintf("%0.1f/%0.1f/%0.1f", (float64(d.Min) / 10.0), (float64(d.Sum) / float64(d.Count) / 10.0), float64(d.Max)/10.0)
-}
 
 func ParseLine(line string) (string, int16) {
 	pre, post, found := strings.Cut(line, ";")
@@ -44,4 +35,41 @@ func ParseLine(line string) (string, int16) {
 	temp = isPositive * temp
 
 	return pre, temp
+}
+
+func ParseFileInto(path string, results map[string]data.StationData) uint64 {
+
+	inputFile, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer inputFile.Close()
+
+	inputScanner := bufio.NewScanner(inputFile)
+	inputScanner.Split(bufio.ScanLines)
+
+	lineCount := uint64(0)
+
+	for inputScanner.Scan() {
+		line := inputScanner.Text()
+
+		name, temp := ParseLine(line)
+
+		currData, found := results[name]
+		if !found {
+			currData.Min = temp
+			currData.Max = temp
+		} else {
+			currData.Min = min(currData.Min, temp)
+			currData.Max = max(currData.Max, temp)
+		}
+
+		currData.Count += 1
+		currData.Sum += int64(temp)
+		results[name] = currData
+
+		lineCount += 1
+	}
+
+	return lineCount
 }
