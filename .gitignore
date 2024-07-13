@@ -1,0 +1,8 @@
+
+#  dont check-in any data
+data/
+
+
+# or binaries
+/gobrc
+/**/__debug_*
