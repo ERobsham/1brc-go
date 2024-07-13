@@ -87,6 +87,7 @@ func main() {
 
 	if ENABLE_DebugLogs {
 		fmt.Printf("read %d lines\n", lineCount)
+		fmt.Printf("found %d stations\n", len(keys))
 	}
 
 	if ENABLE_Output {
@@ -107,6 +108,7 @@ func main() {
 			writer.WriteString(v.String())
 		}
 		writer.WriteRune('}')
+		writer.WriteRune('\n')
 
 		writer.Flush()
 	}
