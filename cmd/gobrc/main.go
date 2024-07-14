@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"gobrc/pkg/data"
-	"gobrc/pkg/naive"
+	"gobrc/pkg/mmapparse"
 	"os"
 	"path/filepath"
 	"runtime/pprof"
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	results := map[string]data.StationData{}
-	lineCount := naive.ParseFileInto(path, results)
+	lineCount := mmapparse.ParseFileInto(path, results)
 
 	keys := make([]string, 0, len(results))
 	for k := range results {

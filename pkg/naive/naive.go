@@ -7,11 +7,9 @@ import (
 	"strings"
 )
 
-const (
-	zero_char_value = int16('0')
-)
+func parseLine(line string) (string, int16) {
+	const zero_char_value = int16('0')
 
-func ParseLine(line string) (string, int16) {
 	pre, post, found := strings.Cut(line, ";")
 	if !found || pre == "" || post == "" {
 		panic("invalid ParseLine() data")
@@ -53,7 +51,7 @@ func ParseFileInto(path string, results map[string]data.StationData) uint64 {
 	for inputScanner.Scan() {
 		line := inputScanner.Text()
 
-		name, temp := ParseLine(line)
+		name, temp := parseLine(line)
 
 		currData, found := results[name]
 		if !found {

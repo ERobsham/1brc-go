@@ -11,13 +11,14 @@ LDFLAGS="-X 'main.FLAG_DebugLogs=${ENABLE_DEBUG_LOGS}'\
 -X 'main.FLAG_Output=${ENABLE_OUTPUT}'\
 -X 'main.FLAG_DataFile=${DATA_FILE}'"
 
+run: DATA_FILE=${RUN_DATA_FILE}
 run: ENABLE_DEBUG_LOGS=""
 run: ENABLE_CPU_PROF=""
 run: ENABLE_OUTPUT=1
-run: DATA_FILE=${RUN_DATA_FILE}
 run: build
 	time ./${OUTPUT_BIN}
 
+# profile: DATA_FILE=${RUN_DATA_FILE}
 profile: ENABLE_DEBUG_LOGS=1
 profile: ENABLE_CPU_PROF=1
 profile: ENABLE_OUTPUT=""

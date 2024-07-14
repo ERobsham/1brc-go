@@ -24,11 +24,20 @@ Test runner specs:
 
 # Initial Results
 
-Go FTW!  A very naive implementation, using the standard `bufio` default line scanner, then parsing the resulting `string`s on a single thread is already more than twice as fast as the base `Objective-C` implementation:  `147.44 real       134.20 user         9.69 sys` (just under 2.5 mins)
+Go FTW!  A very naive implementation, using the standard `bufio` default line scanner, then parsing the resulting `string`s on a single thread is already more than twice as fast as the base `Objective-C` implementation:  
+`147.44 real       134.20 user         9.69 sys` (just under 2.5 mins)
 
 This time, we can easily setup `pprof` and get some nice flame graphs to parse these results(`make profile` then `make view-prof` to open a browser with latest results).
 
 And immediately the one standout bottle neck is just purely reading in the file: `bufio.(*Scanner).Scan() (93.78%)` 
 
 This is outstanding, we already have a super clear direction of where to go to try speeding things up!
+
+
+# Round two - memory mapped file access
+
+Where the `bufio.Scan()` call was our bottleneck, it seemed logical to attempt to skip the buffering and reading and head straight to memory mapping the file so we can access the raw bytes as if it were just memory allocated to our process.  
+
+But alas, swapping over to blindly accessing the byte slice returned by `syscall.Mmap(..)` actually seemed to have almost no effect on our user level code, and added a bunch of extra system overhead (we were spinning at ~60% cpu during the whole run):
+`265.01 real       132.36 user        22.85 sys` (up to almost 4.5 mins... :face-palm: )
 

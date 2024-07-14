@@ -46,7 +46,7 @@ func TestParseLine(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := ParseLine(tt.args.line)
+			got, got1 := parseLine(tt.args.line)
 			if got != tt.want {
 				t.Errorf("ParseLine() got = %v, want %v", got, tt.want)
 			}
@@ -87,7 +87,7 @@ func TestParseLinePanicsWithBadValues(t *testing.T) {
 					t.Errorf("ParseLine() didn't panic for a bad value!")
 				}
 			}()
-			ParseLine(tt.line)
+			parseLine(tt.line)
 		})
 	}
 }
