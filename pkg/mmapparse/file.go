@@ -87,6 +87,13 @@ func (f *MappedFile) Len() int {
 	return len(f.data)
 }
 
+func (f *MappedFile) Read(offset int) byte {
+	if offset > f.Len() {
+		return 0
+	}
+	return f.data[offset]
+}
+
 func (f *MappedFile) ReadChunk(fromOffset int, length int) []byte {
 	if fromOffset > f.Len() {
 		return make([]byte, 0)
