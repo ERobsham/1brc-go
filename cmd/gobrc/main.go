@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"gobrc/pkg/data"
-	"gobrc/pkg/mmapparse"
+	"gobrc/pkg/splitparser"
 	"os"
 	"path/filepath"
 	"runtime/pprof"
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	results := map[string]data.StationData{}
-	lineCount := mmapparse.ParseFileInto(path, results)
+	lineCount := splitparser.ParseFileInto(path, results)
 
 	keys := make([]string, 0, len(results))
 	for k := range results {

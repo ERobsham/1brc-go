@@ -45,3 +45,19 @@ Even running the mmapped reads concurrently didnt get us back to the baseline im
 
 After a little research to understand this confounding result, it turns out mmapping large data can end up halting go routines without the go runtime knowing / being able to swap over to other go routines that are available to work.  So while using mmapping in languages that use OS threads is probably a good choice, here, its just straight up bad.
 
+# Round three - split parser
+
+Next up, where I still wanted to get some more speed and didn't want to use `bufio` or mmaped files, I decided to just keep with the concurrent reads I had already implemented for the mmapped parsing, but use `File.ReadAt()` passing it in a slice from an array I preallocated for each 'chunk reader'.
+
+`33.02 real       228.49 user         9.11 sys`
+
+Okay, this time we're actually getting somewhere!  The 100m test file was being parsed in a few seconds, so I ran a few iterations testing out different sizes of the preallocated buffer, and turns out ~ `1<<24` (ie ~16.7m bytes) was the sweet spot where syscalls for reading the file were minimized.
+
+Now looking at the latest profile I can see a couple major contenders for the next bit of optimizations:
+ * `runtime mapaccess2_faststr()` @ ~30% cpu time
+ * `runtime slicebytetostring()` @ ~ 25% cpu time (of which ~20% is `runtime mallocgc()` overhead)
+
+I had a feeling gc was going to come around to bite us, but I almost find it more interesting how much overhead the hashmap is actually causing at almost 30% of total runtime.
+
+Luckily, I think if we can work around the string conversion, we might also get faster map access 'for free'.
+

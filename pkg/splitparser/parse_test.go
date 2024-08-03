@@ -1,4 +1,4 @@
-package mmapparse
+package splitparser
 
 import (
 	"gobrc/pkg/data"
