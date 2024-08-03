@@ -27,7 +27,7 @@ func TestReadStations(t *testing.T) {
 
 	datas := map[[4]uint64]struct{}{}
 
-	for name, _ := range names {
+	for name := range names {
 		data := convertToFixedData(name)
 
 		datas[data] = struct{}{}
