@@ -41,3 +41,7 @@ Where the `bufio.Scan()` call was our bottleneck, it seemed logical to attempt t
 But alas, swapping over to blindly accessing the byte slice returned by `syscall.Mmap(..)` actually seemed to have almost no effect on our user level code, and added a bunch of extra system overhead (we were spinning at ~60% cpu during the whole run):
 `265.01 real       132.36 user        22.85 sys` (up to almost 4.5 mins... :face-palm: )
 
+Even running the mmapped reads concurrently didnt get us back to the baseline implementation time!
+
+After a little research to understand this confounding result, it turns out mmapping large data can end up halting go routines without the go runtime knowing / being able to swap over to other go routines that are available to work.  So while using mmapping in languages that use OS threads is probably a good choice, here, its just straight up bad.
+
